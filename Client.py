@@ -20,7 +20,6 @@ class Client:
 	TEARDOWN = 3
 
 
-	counter = 0
 	# Initiation..
 	def __init__(self, master, serveraddr, serverport, rtpport, filename):
 		self.master = master
@@ -226,6 +225,7 @@ class Client:
 	
 	def parseRtspReply(self, data):
 		"""Parse the RTSP reply from the server."""
+		print("-"*40 + "\nData received:\n" + data)
 		lines = data.split('\n')
 		seqNum = int(lines[1].split(' ')[1])
 		

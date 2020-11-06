@@ -63,9 +63,9 @@ class ServerWorker:
 				
 				# Generate a randomized RTSP session ID
 				self.clientInfo['session'] = randint(100000, 999999)
-
+				
 				# Send RTSP reply
-				self.replyRtsp(self.OK_200, seq[0])
+				self.replyRtsp(self.OK_200, seq[1])
 				
 				# Get the RTP/UDP port from the last line
 				self.clientInfo['rtpPort'] = request[2].split(' ')[3]
@@ -79,7 +79,7 @@ class ServerWorker:
 				# Create a new socket for RTP/UDP
 				self.clientInfo["rtpSocket"] = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 				
-				self.replyRtsp(self.OK_200, seq[0])
+				self.replyRtsp(self.OK_200, seq[1])
 				
 				# Create a new thread and start sending RTP packets
 				self.clientInfo['event'] = threading.Event()
@@ -94,7 +94,7 @@ class ServerWorker:
 				
 				self.clientInfo['event'].set()
 			
-				self.replyRtsp(self.OK_200, seq[0])
+				self.replyRtsp(self.OK_200, seq[1])
 		
 		# Process TEARDOWN request
 		elif requestType == self.TEARDOWN:
@@ -102,7 +102,7 @@ class ServerWorker:
 
 			self.clientInfo['event'].set()
 			
-			self.replyRtsp(self.OK_200, seq[0])
+			self.replyRtsp(self.OK_200, seq[1])
 			
 			# Close the RTP socket
 			self.clientInfo['rtpSocket'].close()
@@ -152,7 +152,7 @@ class ServerWorker:
 			#print("200 OK")
 			reply = 'RTSP/1.0 200 OK\nCSeq: ' + seq + '\nSession: ' + str(self.clientInfo['session'])
 			connSocket = self.clientInfo['rtspSocket'][0]
-			connSocket.send(reply.encode("utf-8"))
+			connSocket.send(reply.encode())
 		
 		# Error messages
 		elif code == self.FILE_NOT_FOUND_404:

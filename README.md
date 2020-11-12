@@ -9,20 +9,24 @@
     3. Nguyen Van Huu
 
 ### Specification
-[1. Description:]
-    [1.1 Client, ClientLauncher]
+1. Description:
+
+    - Client, ClientLauncher
+
         The ClientLauncher starts the Client and the user interface which you use to send RTSP commands and which is used to display the video. In the Client class, you will need to implement the actions that are taken when the buttons are pressed. You do not need to modify the ClientLauncher module.
 
-    [1.2 Server, ServerWorker]
+    - Server, ServerWorker
+
         These two modules implement the server which responds to the RTSP requests and streams back the video. The RTSP interaction is already implemented and the ServerWorker calls methods from the RtpPacket class to packetize the video data. You do not need to modify these modules.
 
-    [1.3 RtpPacket]
+    - RtpPacket
         This class is used to handle the RTP packets. It has separate methods for handling the received packets at the client side and you do not need to modify them. The Client also de-packetizes (decodes) the data and you do not need to modify this method. You will need to complete the implementation of video data RTPpacketization (which is used by the server).
 
-    [1.6 VideoStream]
+    - VideoStream
         This class is used to read video data from the file on disk. You do not need to modify this class.
 
-[2. How to run:]
+2. How to run:
+
     - First, start the server with the command:
 
     > python Server.py <server_port>

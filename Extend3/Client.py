@@ -20,6 +20,7 @@ class Client:
 	TEARDOWN = 3
 	DESCRIBE = 4
 
+	trigle = False
 
 	# Initiation..
 	def __init__(self, master, serveraddr, serverport, rtpport, filename):
@@ -51,24 +52,24 @@ class Client:
 		self.start["text"] = "Play"
 		self.start["command"] = self.playMovie
 		self.start.grid(row=1, column=1, padx=2, pady=2)
+		
+		# Create Pause button			
+		self.pause = Button(self.master, width=16, padx=3, pady=3)
+		self.pause["text"] = "Pause"
+		self.pause["command"] = self.pauseMovie
+		self.pause.grid(row=1, column=2, padx=2, pady=2)
+		
+		# Create Teardown button
+		self.teardown = Button(self.master, width=16, padx=3, pady=3)
+		self.teardown["text"] = "Teardown"
+		self.teardown["command"] =  self.exitClient
+		self.teardown.grid(row=1, column=3, padx=2, pady=2)
 
 		# Create Describe button
 		self.setup = Button(self.master, width=16, padx=3, pady=3)
 		self.setup["text"] = "Describe"
 		self.setup["command"] = self.describe
 		self.setup.grid(row=1, column=4, padx=2, pady=2)
-		
-		# Create Pause button			
-		self.pause = Button(self.master, width=16, padx=3, pady=3)
-		self.pause["text"] = "Pause"
-		self.pause["command"] = self.pauseMovie
-		self.pause.grid(row=1, column=3, padx=2, pady=2)
-		
-		# Create Teardown button
-		self.teardown = Button(self.master, width=16, padx=3, pady=3)
-		self.teardown["text"] = "Teardown"
-		self.teardown["command"] =  self.exitClient
-		self.teardown.grid(row=1, column=2, padx=2, pady=2)
 		
 		# Create a label to display the movie
 		self.label = Label(self.master, height=19)
@@ -86,7 +87,8 @@ class Client:
 		os.remove(CACHE_FILE_NAME + str(self.sessionId) + CACHE_FILE_EXT) # Delete the cache image from video
 
 	def describe(self):
-		if self.state > self.INIT:
+		"""Describe button handler."""
+		if self.trigle:
 			self.sendRtspRequest(self.DESCRIBE)
 
 	def pauseMovie(self):
@@ -97,6 +99,7 @@ class Client:
 	def playMovie(self):
 		"""Play button handler."""
 		if self.state == self.READY:
+			self.trigle = True
 			# Create a new thread to listen for RTP packets
 			threading.Thread(target=self.listenRtp).start()
 			self.playEvent = threading.Event()

@@ -1,5 +1,5 @@
 # Video Streaming
-### Computer Network Assignment 1 2020-2021 - HCMUT
+## Computer Network Assignment 1 2020-2021 - HCMUT
 
 ### Teacher: Bui Xuan Giang
 ### Student:

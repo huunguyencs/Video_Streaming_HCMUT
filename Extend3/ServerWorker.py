@@ -22,7 +22,7 @@ class ServerWorker:
 	
 	clientInfo = {}
 
-	trigle = False
+
 	
 	def __init__(self, clientInfo):
 		self.clientInfo = clientInfo
@@ -86,7 +86,6 @@ class ServerWorker:
 				
 				# Create a new thread and start sending RTP packets
 				self.clientInfo['event'] = threading.Event()
-				self.trigle = True
 				self.clientInfo['worker']= threading.Thread(target=self.sendRtp) 
 				self.clientInfo['worker'].start()
 		
@@ -103,16 +102,13 @@ class ServerWorker:
 		# Process TEARDOWN request
 		elif requestType == self.TEARDOWN:
 			print("processing TEARDOWN\n")
-			if self.trigle:
-				self.clientInfo['event'].set()
+			self.clientInfo['event'].set()
 			
 			self.replyRtsp(self.OK_200, seq[1])
 			
 			# Close the RTP socket
 			self.clientInfo['rtpSocket'].close()
 		elif requestType == self.DESCRIBE:
-			if self.trigle:
-				self.clientInfo['event'].set()
 			self.replyDescibe(self.OK_200,seq[1])
 			
 	def sendRtp(self):

@@ -112,17 +112,17 @@ class Client:
 				data = self.rtpSocket.recv(20480)
 				if data:
 					rtpPacket = RtpPacket()
-					rtpPacket.decode(data)
+					rtpPacket.decode(data)					
 					self.sumData += len(data)
 					currFrameNbr = rtpPacket.seqNum()
 					print("Current Seq Num: " + str(currFrameNbr))
-
+					
 					try:
 						if self.frameNbr + 1 != currFrameNbr:
 							self.counter += 1
 							print('!'*60 + "\nPACKET LOSS\n" + '!'*60)
 						# currFrameNbr = rtpPacket.seqNum()
-						# version = rtpPacket.version()
+						# version = rtpPacket.version()			
 					except:
 						print("seqNum() error")
 						print('-'*40)
@@ -142,9 +142,11 @@ class Client:
 				# Upon receiving ACK for TEARDOWN request,
 				# close the RTP socket
 				if self.teardownAcked == 1:
-					self.rtpSocket.shutdown(socket.SHUT_RDWR)
-					self.rtpSocket.close()
-					break
+					try:
+						self.rtpSocket.shutdown(socket.SHUT_RDWR)
+						self.rtpSocket.close()
+					finally:
+						break
 					
 	def writeFrame(self, data):
 		"""Write the received frame to a temp image file. Return the image file."""

@@ -150,12 +150,6 @@ class ServerWorker:
 		
 		return rtpPacket.getPacket()
 
-	def describe(self):
-		seq1 = "v=0\nm=video " + str(self.clientInfo['rtpPort']) + " RTP/AVP 26\na=control:streamid=" \
-			 + str(self.clientInfo['session']) +"\na=mimetype:string;\"video/Mjpeg\"\n"
-		seq2 = "Content-Base: " + str(self.clientInfo['videoStream'].filename) + "\nContent-Length: " \
-			 + str(len(seq1)) + "\n"
-		return seq2 + seq1
 		
 	def replyRtsp(self, code, seq):
 		"""Send RTSP reply to the client."""
@@ -170,6 +164,13 @@ class ServerWorker:
 			print("404 NOT FOUND")
 		elif code == self.CON_ERR_500:
 			print("500 CONNECTION ERROR")
+
+	def describe(self):
+		seq1 = "v=0\nm=video " + str(self.clientInfo['rtpPort']) + " RTP/AVP 26\na=control:streamid=" \
+			 + str(self.clientInfo['session']) +"\na=mimetype:string;\"video/Mjpeg\"\n"
+		seq2 = "Content-Base: " + str(self.clientInfo['videoStream'].filename) + "\nContent-Length: " \
+			 + str(len(seq1)) + "\n"
+		return seq2 + seq1
 
 	def replyDescibe(self,code,seq):
 		des = self.describe()

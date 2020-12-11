@@ -18,7 +18,6 @@ class RtpPacket:
 		"""Encode the RTP packet with header fields and payload."""
 
 		timestamp = int(time())
-		print("timestamp: " + str(timestamp))
 		self.header = bytearray(HEADER_SIZE)
 		#--------------
 		# TO COMPLETE
@@ -41,9 +40,9 @@ class RtpPacket:
 		self.header[0] = version << 6
 		self.header[0] = self.header[0] | padding << 5
 		self.header[0] = self.header[0] | extension << 4
-		self.header[0] = self.header[0] | cc
+		self.header[0] = self.header[0] | cc  # contributing source
 		self.header[1] = marker << 7
-		self.header[1] = self.header[1] | pt
+		self.header[1] = self.header[1] | pt # payload type field 
 
 		self.header[2] = seqnum >> 8
 		self.header[3] = seqnum
@@ -53,7 +52,7 @@ class RtpPacket:
 		self.header[6] = (timestamp >> 8) & 0xFF
 		self.header[7] = timestamp & 0xFF
 
-		self.header[8] = ssrc >> 24
+		self.header[8] = ssrc >> 24 # source identifier
 		self.header[9] = ssrc >> 16
 		self.header[10] = ssrc >> 8
 		self.header[11] = ssrc

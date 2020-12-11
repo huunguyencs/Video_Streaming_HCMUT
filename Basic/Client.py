@@ -167,7 +167,7 @@ class Client:
 		elif requestCode == self.PLAY and self.state == self.READY:
 			# Update RTSP sequence number.
 			# ...
-			self.rtspSeq = self.rtspSeq + 1
+			self.rtspSeq += 1
 			
 			# Write the RTSP request to be sent.
 			# request = ...
@@ -180,7 +180,7 @@ class Client:
 		elif requestCode == self.PAUSE and self.state == self.PLAYING:
 			# Update RTSP sequence number.
 			# ...
-			self.rtspSeq = self.rtspSeq + 1
+			self.rtspSeq += 1
 			
 			# Write the RTSP request to be sent.
 			# request = ...
@@ -193,7 +193,7 @@ class Client:
 		elif requestCode == self.TEARDOWN and not self.state == self.INIT:
 			# Update RTSP sequence number.
 			# ...
-			self.rtspSeq = self.rtspSeq + 1
+			self.rtspSeq += 1
 			# Write the RTSP request to be sent.
 			# request = ...
 			request = "TEARDOWN " + str(self.fileName) + " RTSP/1.0\nCSeq: " + str(self.rtspSeq) + "\nSession: " + str(self.sessionId)
@@ -259,7 +259,7 @@ class Client:
 						self.playEvent.set()
 					elif self.requestSent == self.TEARDOWN:
 						# self.state = ...
-						
+						self.state = self.INIT
 						# Flag the teardownAcked to close the socket.
 						self.teardownAcked = 1 
 	

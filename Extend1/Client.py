@@ -19,10 +19,11 @@ class Client:
 	PAUSE = 2
 	TEARDOWN = 3
 
-	start = 0
+	begin = 0
 	sumOfTime = 0
 	sumData = 0
 	counter = 0
+	stop = True
 	# Initiation..
 	def __init__(self, master, serveraddr, serverport, rtpport, filename):
 		self.master = master
@@ -83,17 +84,18 @@ class Client:
 			os.remove(CACHE_FILE_NAME + str(self.sessionId) + CACHE_FILE_EXT) # Delete the cache image from video
 		except:
 			"No cache file to delete."
-		self.sumOfTime += time.time() - self.start
-		rateData = float(int(self.sumData)/int(self.sumOfTime))
-		print('-'*40 + "\nVideo Data Rate: " + str(rateData) +"\n" + '-'*40)
-		rateLoss = float(self.counter/self.frameNbr)
-		print('-'*40 + "\nRTP Packet Loss Rate: " + str(rateLoss) +"\n" + '-'*40)
+		if not self.stop:
+			self.sumOfTime += time.time() - self.begin
+		if self.sumOfTime>0:
+			rateData = float(int(self.sumData)/int(self.sumOfTime))
+			print('-'*40 + "\nVideo Data Rate: " + str(rateData) +"\n" + '-'*40)
+			rateLoss = float(self.counter/self.frameNbr)
+			print('-'*40 + "\nRTP Packet Loss Rate: " + str(rateLoss) +"\n" + '-'*40)
 
 	def pauseMovie(self):
 		"""Pause button handler."""
 		if self.state == self.PLAYING:
 			self.sendRtspRequest(self.PAUSE)
-			self.sumOfTime += time.time() - self.start
 	
 	def playMovie(self):
 		"""Play button handler."""
@@ -102,11 +104,13 @@ class Client:
 			threading.Thread(target=self.listenRtp).start()
 			self.playEvent = threading.Event()
 			self.playEvent.clear()
-			self.start = time.time()
+			
 			self.sendRtspRequest(self.PLAY)
 	
 	def listenRtp(self):		
 		"""Listen for RTP packets."""
+		self.begin = time.time()
+		self.stop = False
 		while True:
 			try:
 				data = self.rtpSocket.recv(20480)
@@ -135,6 +139,8 @@ class Client:
 
 					
 			except:
+				self.sumOfTime += time.time() - self.begin
+				self.stop = True
 				# Stop listening upon requesting PAUSE or TEARDOWN
 				if self.playEvent.isSet(): 
 					break
@@ -147,7 +153,9 @@ class Client:
 						self.rtpSocket.close()
 					finally:
 						break
-					
+		self.sumOfTime += time.time() - self.begin
+		self.stop = True	
+			
 	def writeFrame(self, data):
 		"""Write the received frame to a temp image file. Return the image file."""
 		cachename = CACHE_FILE_NAME + str(self.sessionId) + CACHE_FILE_EXT
@@ -196,7 +204,7 @@ class Client:
 		elif requestCode == self.PLAY and self.state == self.READY:
 			# Update RTSP sequence number.
 			# ...
-			self.rtspSeq = self.rtspSeq + 1
+			self.rtspSeq += 1
 			
 			# Write the RTSP request to be sent.
 			# request = ...
@@ -209,7 +217,7 @@ class Client:
 		elif requestCode == self.PAUSE and self.state == self.PLAYING:
 			# Update RTSP sequence number.
 			# ...
-			self.rtspSeq = self.rtspSeq + 1
+			self.rtspSeq += 1
 			
 			# Write the RTSP request to be sent.
 			# request = ...
@@ -222,7 +230,7 @@ class Client:
 		elif requestCode == self.TEARDOWN and not self.state == self.INIT:
 			# Update RTSP sequence number.
 			# ...
-			self.rtspSeq = self.rtspSeq + 1
+			self.rtspSeq += 1
 			# Write the RTSP request to be sent.
 			# request = ...
 			request = "TEARDOWN " + str(self.fileName) + " RTSP/1.0\nCSeq: " + str(self.rtspSeq) + "\nSession: " + str(self.sessionId)
@@ -288,7 +296,7 @@ class Client:
 						self.playEvent.set()
 					elif self.requestSent == self.TEARDOWN:
 						# self.state = ...
-						
+						self.state = self.INIT
 						# Flag the teardownAcked to close the socket.
 						self.teardownAcked = 1 
 	

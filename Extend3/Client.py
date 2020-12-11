@@ -277,7 +277,7 @@ class Client:
 						self.playEvent.set()
 					elif self.requestSent == self.TEARDOWN:
 						# self.state = ...
-						
+						self.state = self.INIT
 						# Flag the teardownAcked to close the socket.
 						self.teardownAcked = 1 
 	
